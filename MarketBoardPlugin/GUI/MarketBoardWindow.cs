@@ -95,8 +95,6 @@ namespace MarketBoardPlugin.GUI
 
     private int selectedHistory = -1;
 
-    private ImFontPtr fontPtr;
-
     private bool hasListingsHQColumnWidthBeenSet;
 
     private bool hasHistoryHQColumnWidthBeenSet;
@@ -140,7 +138,6 @@ namespace MarketBoardPlugin.GUI
 
       MBPlugin.Framework.Update += this.HandleFrameworkUpdateEvent;
       MBPlugin.GameGui.HoveredItemChanged += this.HandleHoveredItemChange;
-      MBPlugin.PluginInterface.UiBuilder.BuildFonts += this.HandleBuildFonts;
 
       MBPlugin.PluginInterface.UiBuilder.RebuildFonts();
 
@@ -445,7 +442,6 @@ namespace MarketBoardPlugin.GUI
           ImGui.SetCursorPos(new Vector2(40, 40));
         }
 
-        ImGui.PushFont(this.fontPtr);
         ImGui.SameLine();
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() - (ImGui.GetFontSize() / 2.0f) + (19 * scale));
         ImGui.Text(this.selectedItem?.Name);
@@ -500,7 +496,6 @@ namespace MarketBoardPlugin.GUI
         {
           if (ImGui.BeginTabItem("Market Data##marketDataTab"))
           {
-            ImGui.PushFont(this.fontPtr);
             int usedTile = this.plugin.Config.RecentHistoryDisabled ? 1 : 2;
             var tableHeight = (ImGui.GetContentRegionAvail().Y / usedTile) - (ImGui.GetTextLineHeightWithSpacing() * 2);
             ImGui.Text("Current listings (Includes 5%% GST)");
@@ -585,7 +580,6 @@ namespace MarketBoardPlugin.GUI
             {
               ImGui.Separator();
 
-              ImGui.PushFont(this.fontPtr);
               ImGui.Text("Recent history");
               ImGui.PopFont();
 
@@ -692,7 +686,6 @@ namespace MarketBoardPlugin.GUI
                 .OrderBy(h => h.Date)
                 .ToList();
 
-              ImGui.PushFont(this.fontPtr);
               ImGui.Text("Price variations (per unit)");
               ImGui.PopFont();
 
@@ -712,7 +705,6 @@ namespace MarketBoardPlugin.GUI
 
               ImGui.Separator();
 
-              ImGui.PushFont(this.fontPtr);
               ImGui.Text("Traded volumes");
               ImGui.PopFont();
 
@@ -814,7 +806,6 @@ namespace MarketBoardPlugin.GUI
       {
         MBPlugin.Framework.Update -= this.HandleFrameworkUpdateEvent;
         MBPlugin.GameGui.HoveredItemChanged -= this.HandleHoveredItemChange;
-        MBPlugin.PluginInterface.UiBuilder.BuildFonts -= this.HandleBuildFonts;
         this.selectedItemIcon?.Dispose();
       }
 
@@ -928,31 +919,6 @@ namespace MarketBoardPlugin.GUI
         MBPlugin.Log.Error(ex, $"Error loading category list.");
         return null;
       }
-    }
-
-    private unsafe void HandleBuildFonts()
-    {
-      var fontPath = Path.Combine(MBPlugin.PluginInterface.DalamudAssetDirectory.FullName, "UIRes", "NotoSansCJKjp-Medium.otf");
-      this.fontPtr = ImGui.GetIO().Fonts.AddFontFromFileTTF(fontPath, 24.0f);
-
-      ImFontConfigPtr fontConfig = ImGuiNative.ImFontConfig_ImFontConfig();
-      fontConfig.MergeMode = true;
-      fontConfig.NativePtr->DstFont = UiBuilder.DefaultFont.NativePtr;
-
-      var fontRangeHandle = GCHandle.Alloc(
-        new ushort[]
-        {
-            0x202F,
-            0x202F,
-            0,
-        },
-        GCHandleType.Pinned);
-
-      var otherPath = Path.Combine(MBPlugin.PluginInterface.AssemblyLocation.DirectoryName, "Resources", "NotoSans-Medium.otf");
-      ImGui.GetIO().Fonts.AddFontFromFileTTF(otherPath, 17.0f, fontConfig, fontRangeHandle.AddrOfPinnedObject());
-
-      fontConfig.Destroy();
-      fontRangeHandle.Free();
     }
 
     private void HandleFrameworkUpdateEvent(IFramework framework)

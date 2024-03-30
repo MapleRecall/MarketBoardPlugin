@@ -447,7 +447,6 @@ namespace MarketBoardPlugin.GUI
         ImGui.Text(this.selectedItem?.Name);
         ImGui.SameLine(ImGui.GetContentRegionAvail().X - (250 * scale));
         ImGui.SetCursorPosY(0);
-        ImGui.PopFont();
         ImGui.BeginGroup();
         ImGui.SetNextItemWidth(250 * scale);
         if (ImGui.BeginCombo("##worldCombo", this.selectedWorld > -1 ? this.worldList[this.selectedWorld].Item2 : string.Empty))
@@ -499,7 +498,6 @@ namespace MarketBoardPlugin.GUI
             int usedTile = this.plugin.Config.RecentHistoryDisabled ? 1 : 2;
             var tableHeight = (ImGui.GetContentRegionAvail().Y / usedTile) - (ImGui.GetTextLineHeightWithSpacing() * 2);
             ImGui.Text("Current listings (Includes 5%% GST)");
-            ImGui.PopFont();
 
             ImGui.BeginChild("currentListings", new Vector2(0.0f, tableHeight));
             ImGui.Columns(5, "currentListingsColumns");
@@ -579,10 +577,7 @@ namespace MarketBoardPlugin.GUI
             if (!this.plugin.Config.RecentHistoryDisabled)
             {
               ImGui.Separator();
-
               ImGui.Text("Recent history");
-              ImGui.PopFont();
-
               ImGui.BeginChild("recentHistory", new Vector2(0.0f, tableHeight));
               ImGui.Columns(6, "recentHistoryColumns");
 
@@ -687,7 +682,6 @@ namespace MarketBoardPlugin.GUI
                 .ToList();
 
               ImGui.Text("Price variations (per unit)");
-              ImGui.PopFont();
 
               var pricePlotValues = marketDataRecentHistory
                 .Select(h => h.PriceAvg)
@@ -704,9 +698,7 @@ namespace MarketBoardPlugin.GUI
                 new Vector2(0, tableHeight));
 
               ImGui.Separator();
-
               ImGui.Text("Traded volumes");
-              ImGui.PopFont();
 
               var qtyPlotValues = marketDataRecentHistory
                 .Select(h => h.QtySum)
